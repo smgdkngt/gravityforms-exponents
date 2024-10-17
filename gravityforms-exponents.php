@@ -1,11 +1,12 @@
 <?php
 /**
  * Plugin Name: Gravity Forms Exponent Calculation
- * Plugin URI: https://michaeldozark.com/plugins/gravity-forms-exponents/
+ * Plugin URI: https://github.com/smgdkngt/gravityforms-exponents
  * Description: Adds exponent support for calculations in number fields
  * Version: 0.1.1
- * Author: Michael Dozark (fork by Sem Goedknegt)
+ * Author: Michael Dozark (fork by knegt.io)
  * Author URI: https://knegt.io/
+ * GitHub Plugin URI: smgdkngt/gravity-forms-exponents
  *
  * @package GravityFormsExponents
  */
