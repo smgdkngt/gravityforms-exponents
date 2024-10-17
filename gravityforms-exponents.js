@@ -26,6 +26,13 @@ Number.prototype.pow = function(n) {return Math.pow(this,n)}
 gform.addFilter( 'gform_calculation_result', function( result, formulaField, formId, calcObj ) {
 
 	/**
+	 * Extend the default pattern with a caret
+	 * 
+	 * Default exprPatt in Gravity Forms 2.8.17 is: /^[0-9 -/*\(\)]+$/i
+	 */
+	calcObj.exprPatt = /^[0-9 -/*\(\)^]+$/i;
+
+	/**
 	 * Only evaluate if the field has a caret in it
 	 *
 	 * Technically we should be able to run any formulas through this without

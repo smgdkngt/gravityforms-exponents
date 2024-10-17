@@ -3,9 +3,9 @@
  * Plugin Name: Gravity Forms Exponent Calculation
  * Plugin URI: https://michaeldozark.com/plugins/gravity-forms-exponents/
  * Description: Adds exponent support for calculations in number fields
- * Version: 0.1.0
- * Author: Michael Dozark
- * Author URI: http://www.michaeldozark.com/
+ * Version: 0.1.1
+ * Author: Michael Dozark (fork by Sem Goedknegt)
+ * Author URI: https://knegt.io/
  *
  * @package GravityFormsExponents
  */
@@ -62,22 +62,6 @@ function gforms_exponents_calculation( $result, $formula, $field, $form, $entry 
 	 *       Description of `strpos` function
 	 */
 	if ( false !== strpos( $formula, '^' ) ) {
-
-		/**
-		 * Check if we are using PHP 5.6 or better
-		 *
-		 * PHP 5.6 introduced `**` as an exponention operator, which makes the calculation
-		 * much more straightforward when it is available.
-		 *
-		 * @see  http://php.net/manual/en/language.operators.arithmetic.php
-		 *       Description of arithmetic operators in PHP
-		 * @link http://php.net/manual/en/function.version-compare.php
-		 *       Description of `version_compare` function
-		 * @link http://php.net/manual/en/function.phpversion.php
-		 *       Description of `phpversion` function
-		 */
-		$php_version = version_compare( phpversion(), '5.6' );
-
 		/**
 		 * Sanitize string input
 		 *
@@ -98,55 +82,12 @@ function gforms_exponents_calculation( $result, $formula, $field, $form, $entry 
 		$formula = preg_replace( '@[^0-9\s\n\r\+\-*\/\^\(\)\.]@is', '', $formula );
 
 		/**
-		 * If we are using PHP 5.6+, convert carets to the exponention operator
+		 * Replace carets with exponention operators
+		 *
+		 * @link http://php.net/manual/en/function.str-replace.php
+		 *       Description of `str_replace` function
 		 */
-		if ( $php_version >= 0 ) {
-
-			/**
-			 * Replace carets with exponention operators
-			 *
-			 * @link http://php.net/manual/en/function.str-replace.php
-			 *       Description of `str_replace` function
-			 */
-			$formula = str_replace( '^', '**', $formula );
-
-		/**
-		 * If we are using PHP < 5.6, we'll need to get creative with replacements
-		 *
-		 * Right now this can handle either numbers or expressions in parentheses for
-		 * our exponents, but not nested expressions.
-		 *
-		 * Example: The following will work just fine
-		 * 2^7
-		 * 3 ^ 2
-		 * ( 1 - 2 ) ^ ( 2 / 3 )
-		 *
-		 * This will not
-		 * ( 1 - ( 2 / 3 ) ) ^ 3
-		 *
-		 * @todo Can we get nested expressions working? Perhaps with a lookbehind?
-		 */
-		} else { // if ( $php_version >= 0 )
-
-			/**
-			 * Find our exponent expressions
-			 *
-			 * @link http://php.net/manual/en/function.preg-match-all.php
-			 *       Description of the `preg_match_all` function
-			 */
-			preg_match_all( '@(\([^\(\)]*\)|[\d\.]+)\s*\^\s*(\([^\(\)]*\)|[\d\.]+)@is', $formula, $matches );
-
-			$search = $matches[0];
-
-			$replace = array();
-
-			foreach ( $search as $key => $expression ) {
-				$replace[] = pow( eval( "return {$matches[1][$key]};" ), eval( "return {$matches[2][$key]};" ) );
-			} // foreach ( $search as $key => $expression )
-
-			$formula = str_replace( $search, $replace, $formula );
-
-		} // if ( $php_version >= 0 )
+		$formula = str_replace( '^', '**', $formula );
 
 		/**
 		 * Set result equal to evaluated formula
@@ -156,7 +97,7 @@ function gforms_exponents_calculation( $result, $formula, $field, $form, $entry 
 		 */
 		$result = eval( "return {$formula};" );
 
-	} // if ( false !== strpos( $formula, '^' ) )
+	}
 
 	return $result;
 }
@@ -191,6 +132,6 @@ function gforms_exponents_wp_enqueue_scripts( $form ) {
 		 */
 		wp_enqueue_script( 'gforms-exponents', trailingslashit( plugin_dir_url( __FILE__ ) ) . "gravityforms-exponents{$min}.js", array( 'gform_gravityforms' ), '0.1.0', true );
 
-	} // if ( GFFormDisplay::has_calculation_field( $form ) )
+	}
 
 }
